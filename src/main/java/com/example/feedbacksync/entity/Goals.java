@@ -1,0 +1,42 @@
+package com.example.feedbacksync.entity;
+
+
+import com.example.feedbacksync.entity.enums.GoalStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@Entity
+@Table(name = "goals")
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Goals {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long goalId;
+
+    @Column(name = "goal_name", nullable = false)
+    private String goalName;
+
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @Column(name = "status", nullable = false)
+    private GoalStatus status;
+
+    @Column(name = "due_date", nullable = false)
+    private Date date;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    //Relationships
+
+}
