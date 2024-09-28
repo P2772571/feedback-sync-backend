@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,7 +34,7 @@ public class WebSecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
-    public AuthTokenFilter authenticationJwtFilter(){
+    public AuthTokenFilter authenticationJwtFilter() {
         return new AuthTokenFilter();
     }
 
@@ -41,7 +42,7 @@ public class WebSecurityConfig {
 
     @Autowired
     public WebSecurityConfig(
-            @Lazy  UserDetailsServiceImpl userDetailsService,
+            @Lazy UserDetailsServiceImpl userDetailsService,
             DataSource dataSource,
             AuthEntryPointJwt unauthorizedHandler
     ) {
@@ -56,21 +57,21 @@ public class WebSecurityConfig {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
-        http
+        http.cors(Customizer.withDefaults())
                 .authorizeRequests(authorizeRequests
                         ->
                         authorizeRequests
                                 .requestMatchers("/public/api/auth/register").permitAll()
                                 .requestMatchers("/public/api/auth/login").permitAll()
                                 .requestMatchers("/public/api/auth/forgot-password").permitAll()
-                                .requestMatchers("/public/api/health").permitAll()
+                                .requestMatchers("/public/api/health-check").permitAll()
                                 .anyRequest().authenticated())
-                        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                        .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                        .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-                        .csrf(AbstractHttpConfigurer::disable)
-                        .addFilterBefore(authenticationJwtFilter(), UsernamePasswordAuthenticationFilter.class);
-                return http.build();
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(authenticationJwtFilter(), UsernamePasswordAuthenticationFilter.class).cors(Customizer.withDefaults());
+        return http.build();
     }
 
     @Bean
@@ -79,10 +80,10 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception{
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder auth =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        return  auth.build();
+        return auth.build();
     }
 }

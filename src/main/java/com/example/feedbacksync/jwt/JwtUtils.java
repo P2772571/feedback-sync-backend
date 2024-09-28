@@ -1,6 +1,5 @@
 package com.example.feedbacksync.jwt;
 
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;

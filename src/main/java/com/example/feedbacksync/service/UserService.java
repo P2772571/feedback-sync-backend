@@ -51,8 +51,17 @@ public class UserService {
      * @param username - The username or email
      * @return - The user entity
      */
-
     public User findUserByUsernameOrEmail(String username) {
         return username.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") ? userRepository.findByEmail(username) : userRepository.findByUsername(username);
+    }
+
+    public User updateUser (User user, String password){
+
+        user.setPassword(passwordEncoder.encode(password));
+        return userRepository.save(user);
+    }
+
+    public boolean checkIfValidOldPassword(User user, String oldPassword) {
+        return passwordEncoder.matches(oldPassword, user.getPassword());
     }
 }
