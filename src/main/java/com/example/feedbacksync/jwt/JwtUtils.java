@@ -63,6 +63,16 @@ public class JwtUtils {
                 .compact();
     }
 
+    public String  generateTokenFromUsername(String username){
+        return Jwts
+                .builder()
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date((new Date().getTime()+jwtExpirationMs)))
+                .signWith(key())
+                .compact();
+    }
+
     public String getUsernameFromJwt(String token){
         return  Jwts
                 .parser()
@@ -78,6 +88,15 @@ public class JwtUtils {
     public String generateRefreshToken(UserDetails userDetails) {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtRefreshExpirationMs))
+                .signWith(key())
+                .compact();
+    }
+
+    public String generateRefreshToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtRefreshExpirationMs))
                 .signWith(key())
