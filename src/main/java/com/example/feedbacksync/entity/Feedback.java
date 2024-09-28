@@ -23,11 +23,21 @@ public class Feedback {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean isSharedWithManager;
+
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // Relationships
-    // giver
-    // receiver
+    @ManyToOne
+    @JoinColumn(name = "giver_id", nullable = false)
+    private User giver;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", nullable = false)
+    private User receiver;
+
+
 
 }

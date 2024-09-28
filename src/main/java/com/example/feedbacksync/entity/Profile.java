@@ -25,5 +25,11 @@ public class Profile {
     @Column(name = "job_title")
     private String jobTitle;
 
-  // Relationship with user
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "manager_id")
+    private User manager;
 }

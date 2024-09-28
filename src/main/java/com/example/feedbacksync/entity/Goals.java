@@ -1,6 +1,5 @@
 package com.example.feedbacksync.entity;
 
-
 import com.example.feedbacksync.entity.enums.GoalStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,15 +27,25 @@ public class Goals {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(columnDefinition = "int default 0")
+    private Integer progress;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private GoalStatus status;
+    private GoalStatus status = GoalStatus.PENDING;
 
     @Column(name = "due_date", nullable = false)
-    private Date date;
+    private Date dueDate;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    //Relationships
 
+     @ManyToOne
+     @JoinColumn(name = "user_id", nullable = false)
+     private User user;
+
+     @ManyToOne
+     @JoinColumn(name = "assigned_by")
+     private User assignedBy;
 }

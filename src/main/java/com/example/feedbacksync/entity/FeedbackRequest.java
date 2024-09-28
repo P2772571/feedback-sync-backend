@@ -31,6 +31,13 @@ public class FeedbackRequest {
     private LocalDateTime createdAt;
 
     // Relationships
+    @ManyToOne
+    @JoinColumn(name = "requester_id", nullable = false)
+    private User requester;
+
+    @ManyToOne
+    @JoinColumn(name = "requestee_id", nullable = false)
+    private User requestee;
 
 
 }

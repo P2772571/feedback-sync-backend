@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "pip")
@@ -21,20 +22,28 @@ public class Pip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pipId;
 
-    @Column(name = "objectives", nullable = false)
-    private String objectives;
+    @Column(name = "title", nullable = false)
+    private String title;
 
-    @Column(name = "timeline", nullable = false)
-    private String timeline;
+    @Column(nullable = false)
+    private Date startDate;
+
+    @Column(nullable = false)
+    private Date endDate;
+
+    @Column(columnDefinition = "int default 0")
+    private Integer progress;
 
     @Column(name = "support", nullable = false)
     private String support;
 
-    @Column(name = "outcome", nullable = false)
-    private PipOutcome outcome;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'IMPROVEMENT'")
+    private PipOutcome outcome; // Use PipOutcome enum instead of String
 
-    @Column(name = "status", nullable = false)
-    private PipStatus status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'ACTIVE'")
+    private PipStatus status; // Use PipStatus enum instead of String
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -42,5 +51,13 @@ public class Pip {
     private LocalDateTime updatedAt;
 
     // Relationships
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private User employee;
+
+    @ManyToOne
+    @JoinColumn(name = "manager_id", nullable = false)
+    private User manager;
 
 }
