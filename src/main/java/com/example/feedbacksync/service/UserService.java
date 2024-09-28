@@ -55,7 +55,7 @@ public class UserService {
         return username.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") ? userRepository.findByEmail(username) : userRepository.findByUsername(username);
     }
 
-    public User updateUser (User user, String password){
+    public User changePassword (User user, String password){
 
         user.setPassword(passwordEncoder.encode(password));
         return userRepository.save(user);
@@ -63,5 +63,11 @@ public class UserService {
 
     public boolean checkIfValidOldPassword(User user, String oldPassword) {
         return passwordEncoder.matches(oldPassword, user.getPassword());
+    }
+
+    public User updateUser(User user, String username, String email) {
+        user.setEmail(email != null ? email : user.getEmail());
+        user.setUsername(username != null ? username : user.getUsername());
+        return userRepository.save(user);
     }
 }

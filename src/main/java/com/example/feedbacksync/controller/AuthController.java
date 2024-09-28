@@ -202,7 +202,7 @@ public class AuthController {
             }
 
 
-            userService.updateUser(user, requestBody.getNewPassword());
+            userService.changePassword(user, requestBody.getNewPassword());
 
             return new ResponseEntity<>("Password updated successfully", HttpStatus.OK);
 
