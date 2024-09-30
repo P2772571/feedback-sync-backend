@@ -22,4 +22,12 @@ public class ProfileResponse {
     private String username;
     private ProfileResponse manager;
     private List<ProfileResponse> employees;
+
+
+    public  String getFullName(){
+        if (!firstName.isEmpty() && !lastName.isEmpty()){
+            return firstName+" "+lastName;
+        }
+        return "";
+    }
 }

@@ -63,6 +63,11 @@ public class JwtUtils {
                 .compact();
     }
 
+    /**
+     * Generate JWT Token from Username
+     * @param username - The username
+     * @return - The JWT token
+     */
     public String  generateTokenFromUsername(String username){
         return Jwts
                 .builder()
@@ -73,6 +78,11 @@ public class JwtUtils {
                 .compact();
     }
 
+    /**
+     * Get Username from JWT
+     * @param token - The JWT token
+     * @return - The username
+     */
     public String getUsernameFromJwt(String token){
         return  Jwts
                 .parser()
@@ -83,7 +93,11 @@ public class JwtUtils {
                 .getSubject();
     }
 
-    // Generate Refresh Token (Longer expiration)
+    /**
+     * Generate Refresh Token
+     * @param userDetails - The user details
+     * @return - The refresh token
+     */
     @SuppressWarnings("deprecation")
     public String generateRefreshToken(UserDetails userDetails) {
         return Jwts.builder()
@@ -94,6 +108,11 @@ public class JwtUtils {
                 .compact();
     }
 
+    /**
+     * Generate Refresh Token
+     * @param username - The username
+     * @return - The refresh token
+     */
     public String generateRefreshToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -116,10 +135,19 @@ public class JwtUtils {
                 .getPayload().getExpiration().getTime();
     }
 
+    /**
+     *  Key for JWT Token generation and validation
+     *  @return - The key for JWT Token
+     */
     private Key key(){
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
+    /**
+     * Validate JWT Token
+     * @param authToken - The JWT token
+     * @return - The validation status
+     */
     public boolean validateJwtToken(String authToken){
         try{
             Jwts.parser()

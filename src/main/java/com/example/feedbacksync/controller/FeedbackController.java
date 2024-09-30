@@ -12,10 +12,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/feedback")
+@CrossOrigin(origins = "http://localhost:3000")
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
 
+    /**
+     * Constructor for FeedbackController
+     * @param feedbackService FeedbackService
+     */
     public FeedbackController(FeedbackService feedbackService) {
         this.feedbackService = feedbackService;
     }

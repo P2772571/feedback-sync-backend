@@ -9,11 +9,30 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * UserDetailsServiceImpl class implements UserDetailsService interface and overrides the loadUserByUsername method.
+ * This class is used to load user-specific data. It is used by the DaoAuthenticationProvider to authenticate a user.
+ * The loadUserByUsername method returns a UserDetails object that contains the user's information.
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    @Autowired
-    private UserRespository userRespository;
+    private final UserRespository userRespository;
+
+    /**
+     * Constructor for UserDetailsServiceImpl class.
+     * @param userRespository UserRespository object.
+     */
+    public UserDetailsServiceImpl(UserRespository userRespository) {
+        this.userRespository = userRespository;
+    }
+
+    /**
+     * This method is used to load user-specific data.
+     * @param username Username of the user.
+     * @return UserDetails object that contains the user's information.
+     * @throws UsernameNotFoundException If the user is not found.
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -29,7 +48,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         } else {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
-
-
     }
 }

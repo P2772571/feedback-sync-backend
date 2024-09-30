@@ -9,9 +9,8 @@ import com.example.feedbacksync.repository.FeedbackRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 /**
  * Feedback Service class to handle feedback related Business logic and operations
@@ -21,13 +20,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class FeedbackService {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private FeedbackRepository feedbackRepository;
+    private final UserService userService;
+    private final FeedbackRepository feedbackRepository;
 
-    @Autowired
-    private ProfileService profileService;
+    private final ProfileService profileService;
+
+    public FeedbackService(UserService userService, FeedbackRepository feedbackRepository, ProfileService profileService) {
+        this.userService = userService;
+        this.feedbackRepository = feedbackRepository;
+        this.profileService = profileService;
+    }
 
     /**
      * Create a new feedback for a user
@@ -53,9 +55,8 @@ public class FeedbackService {
         feedback.setReceiver(receiver);
 
         Feedback saveFeedback = feedbackRepository.save(feedback);
-        FeedbackResponse response = getFeedbackResponse(saveFeedback);
 
-        return response;
+        return getFeedbackResponse(saveFeedback);
     }
 
     /**
@@ -73,7 +74,7 @@ public class FeedbackService {
 
     /**
      * Get all feedbacks given by a user
-     * @param giver User
+     * @param giverId User
      * @return List of Feedback
      */
     public List<FeedbackResponse> getAllFeedbacksByGiver(Long giverId) {
@@ -90,7 +91,7 @@ public class FeedbackService {
 
     /**
      * Get all feedbacks received by a user
-     * @param receiver User
+     * @param receiverId User
      * @return List of Feedback
      */
     public List<FeedbackResponse> getAllFeedbacksByReceiver(Long receiverId) {

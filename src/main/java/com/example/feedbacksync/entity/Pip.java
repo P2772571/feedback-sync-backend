@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "pip")
+@Table(name = "pips")
 @Setter
 @Getter
 @NoArgsConstructor
@@ -31,19 +31,19 @@ public class Pip {
     @Column(nullable = false)
     private Date endDate;
 
-    @Column(columnDefinition = "int default 0")
-    private Integer progress;
+    @Column(name = "progress", nullable = false)
+    private Integer progress = 0;
 
     @Column(name = "support", nullable = false)
     private String support;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(20) default 'IMPROVEMENT'")
-    private PipOutcome outcome; // Use PipOutcome enum instead of String
+    private PipOutcome outcome;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(20) default 'ACTIVE'")
-    private PipStatus status; // Use PipStatus enum instead of String
+    private PipStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

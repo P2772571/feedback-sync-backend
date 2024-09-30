@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * AuthController class to handle authentication related operations
+ * This class is used to authenticate the user, register a new user, and handle forgot password
+ */
 @RestController
 @RequestMapping("/public/api/auth")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -37,6 +41,13 @@ public class AuthController {
     private final UserService userService;
     private final JwtBlackListService jwtBlackListService;
 
+    /**
+     * Constructor for AuthController class.
+     * @param jwtUtils JwtUtils object.
+     * @param authenticationManager AuthenticationManager object.
+     * @param userService UserService object.
+     * @param jwtBlackListService JwtBlackListService object.
+     */
     public AuthController(JwtUtils jwtUtils, AuthenticationManager authenticationManager, UserService userService, JwtBlackListService jwtBlackListService, JwtBlackListService jwtBlackListService1) {
         this.jwtUtils = jwtUtils;
         this.authenticationManager = authenticationManager;
@@ -49,7 +60,6 @@ public class AuthController {
      * @param loginRequest - The request body containing the user credentials
      * @return - The response entity containing the user details, access token, and refresh token
      */
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         Authentication authentication;
@@ -175,7 +185,6 @@ public class AuthController {
     /**
      * Change User's Password
      */
-
     @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest requestBody){
@@ -196,14 +205,11 @@ public class AuthController {
                 return new ResponseEntity<>("New password cannot be the same as the old password", HttpStatus.BAD_REQUEST);
             }
 
-
             if (!userService.checkIfValidOldPassword(user, requestBody.getOldPassword())){
                 return new ResponseEntity<>("Old password is incorrect", HttpStatus.BAD_REQUEST);
             }
 
-
             userService.changePassword(user, requestBody.getNewPassword());
-
             return new ResponseEntity<>("Password updated successfully", HttpStatus.OK);
 
 

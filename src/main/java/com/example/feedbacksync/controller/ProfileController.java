@@ -8,40 +8,51 @@ import com.example.feedbacksync.payloads.profile.ProfileResponse;
 import com.example.feedbacksync.service.ProfileService;
 import com.example.feedbacksync.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/profile")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ProfileController {
 
-    @Autowired
-    private ProfileService profileService;
+    private final ProfileService profileService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
+    /**
+     * Constructor for ProfileController
+     * @param profileService ProfileService
+     * @param userService UserService
+     * @param jwtUtils JwtUtils
+     * @param authenticationManager AuthenticationManager
+     */
+    public ProfileController(ProfileService profileService, UserService userService, JwtUtils jwtUtils, AuthenticationManager authenticationManager) {
+        this.profileService = profileService;
+        this.userService = userService;
+        this.jwtUtils = jwtUtils;
+        this.authenticationManager = authenticationManager;
+    }
 
+    /**
+     * Get user profile
+     * @param request HttpServletRequest
+     * @return ProfileResponse
+     */
     @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping
     public ResponseEntity<?> getUserProfile(HttpServletRequest request){
-
-
         try{
             // Getting username from Security Context
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -55,8 +66,8 @@ public class ProfileController {
 
     /**
      * Create a new user profile
-     * @param profileRequest
-     * @return
+     * @param profileRequest ProfileRequest
+     * @return ProfileResponse
      */
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping
@@ -77,8 +88,8 @@ public class ProfileController {
 
     /**
      * Update user profile
-     * @param profileRequest
-     * @return
+     * @param profileRequest ProfileRequest
+     * @return ProfileResponse
      */
     @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping()

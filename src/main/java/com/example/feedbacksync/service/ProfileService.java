@@ -12,16 +12,30 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ProfileService class to handle profile related operations
+ * This class is used to get and update user profiles
+ */
 @Service
 public class ProfileService {
-    @Autowired
-    private ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
 
-    @Autowired
-    private UserRespository userRespository;
+    private final UserRespository userRespository;
 
     /**
-     * Get the profile of a user
+     * Constructor for ProfileService class.
+     * @param profileRepository ProfileRepository object.
+     * @param userRespository UserRespository object.
+     */
+    public ProfileService(ProfileRepository profileRepository, UserRespository userRespository) {
+        this.profileRepository = profileRepository;
+        this.userRespository = userRespository;
+    }
+
+    /**
+     * Get User Profile
+     * @param username - The username or email
+     * @return - The profile response
      */
     public ProfileResponse getUserProfile(String username) {
         User user = username.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")? userRespository.findByEmail(username) : userRespository.findByUsername(username);
@@ -29,12 +43,12 @@ public class ProfileService {
             throw new RuntimeException("User not found with username or email: " + username);
         }
 
-
         Profile profile = profileRepository.findProfileByUser(user);
 
         if (profile == null) {
             throw new RuntimeException("Profile not found for user: " + username);
         }
+
         ProfileResponse response = new ProfileResponse();
         response.setProfileId(profile.getProfileId());
         response.setFirstName(profile.getFirstName());
@@ -88,6 +102,9 @@ public class ProfileService {
 
     /**
      * Create User Profile
+     * @param username - The username or email
+     * @param profileRequest - The profile request
+     * @return - The created profile response
      */
     public ProfileResponse createUserProfile(String username, ProfileRequest profileRequest) {
         User user = username.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") ? userRespository.findByEmail(username) : userRespository.findByUsername(username);
@@ -115,6 +132,13 @@ public class ProfileService {
         return response;
     }
 
+    /**
+     * Update User Profile
+     * @param username - The username or email
+     * @param profileRequest - The profile request
+     * @return - The updated profile response
+     *
+     */
     public ProfileResponse updateProfile(String username, ProfileRequest profileRequest) {
         User user = username.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") ? userRespository.findByEmail(username) : userRespository.findByUsername(username);
         if (user == null) {

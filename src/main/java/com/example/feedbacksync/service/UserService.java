@@ -12,11 +12,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRespository userRepository;
+    private final UserRespository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    /**
+     * Constructor for UserService class.
+     * @param userRepository UserRespository object.
+     * @param passwordEncoder PasswordEncoder object.
+     */
+    public UserService(UserRespository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     /**
      * Create a new user account in the database
@@ -33,7 +41,6 @@ public class UserService {
         if (userRepository.findByEmail(request.getEmail()) != null) {
             throw new UserAlreadyExistsException("Email is already registered.");
         }
-
 
         // Create a new User entity
         User newUser = new User();
@@ -55,16 +62,35 @@ public class UserService {
         return username.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") ? userRepository.findByEmail(username) : userRepository.findByUsername(username);
     }
 
+    /**
+     * Change the password of the user
+     * @param user - The user entity
+     * @param password - The new password
+     * @return - The updated user entity
+     */
     public User changePassword (User user, String password){
 
         user.setPassword(passwordEncoder.encode(password));
         return userRepository.save(user);
     }
 
+    /**
+     * Check if the old password is valid
+     * @param user - The user entity
+     * @param oldPassword - The old password
+     * @return - True if the old password is valid, false otherwise
+     */
     public boolean checkIfValidOldPassword(User user, String oldPassword) {
         return passwordEncoder.matches(oldPassword, user.getPassword());
     }
 
+    /**
+     * Update User details
+     * @param user - The user entity
+     * @param username - The new username
+     * @param email - The new email
+     * @return - The updated user entity
+     */
     public User updateUser(User user, String username, String email) {
         user.setEmail(email != null ? email : user.getEmail());
         user.setUsername(username != null ? username : user.getUsername());
@@ -72,7 +98,9 @@ public class UserService {
     }
 
     /**
-     *
+     * Find User by User Id
+     * @param id - The user id
+     * @return - The user entity
      */
     public User findUserByUserId(Long id){
         return userRepository.findById(id).orElse(null);

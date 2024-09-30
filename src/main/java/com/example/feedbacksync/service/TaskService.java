@@ -30,7 +30,6 @@ public class TaskService {
         this.goalsRepository = goalsRepository;
     }
 
-
     /**
      * Create a task for a goal
      * @param goalId Long 

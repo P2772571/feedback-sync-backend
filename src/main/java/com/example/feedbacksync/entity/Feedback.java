@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "feedback")
+@Table(name = "feedbacks")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -37,7 +37,5 @@ public class Feedback {
     @ManyToOne
     @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver;
-
-
 
 }

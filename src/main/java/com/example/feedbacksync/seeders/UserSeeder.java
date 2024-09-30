@@ -12,6 +12,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * UserSeeder class is used to seed data into the User table in the database.
+ * This class is annotated with @Component annotation to indicate that it is a Spring component.
+ * The class has a constructor that takes UserRespository, ProfileRepository, and PasswordEncoder as arguments.
+ * The seed method is used to seed data into the User table.
+ */
 @Component
 public class UserSeeder {
 
@@ -21,12 +27,23 @@ public class UserSeeder {
 
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * This is the constructor of the UserSeeder class.
+     * The constructor takes UserRespository, ProfileRepository, and PasswordEncoder as arguments.
+     * @param userRepository  UserRespository object to interact with the User table in the database.
+     * @param profileRepository ProfileRepository object to interact with the Profile table in the database.
+     * @param passwordEncoder PasswordEncoder object to encode the password before saving it to the database.
+     */
     public UserSeeder(UserRespository userRepository, ProfileRepository profileRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * This method is used to seed data into the User table.
+     * The method checks if the User table is empty and if it is, it seeds data into the table.
+     */
     public void seed() {
         if (userRepository.count() == 0) {
             User rizwan = new User();

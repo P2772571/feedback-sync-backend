@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * JwtBlackListService class to handle blacklisting of JWT tokens
+ */
 @Service
 public class JwtBlackListService {
     private final RedisTemplate<String, String> redisTemplate;
