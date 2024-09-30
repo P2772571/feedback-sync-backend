@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tasks {
+public class Task {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long taskId;
@@ -22,16 +22,16 @@ public class Tasks {
     @Column(nullable = false)
     private String taskName;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean isCompleted;
+    @Column(nullable = false)
+    private Boolean isCompleted= false;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "goal_id", nullable = true) // Task can be associated with a Goal
-    private Goals goal;
+    private Goal goal;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pip_id", nullable = true) // Task can be associated with a PIP

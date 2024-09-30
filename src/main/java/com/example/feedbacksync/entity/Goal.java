@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Goals {
+public class Goal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long goalId;
@@ -27,15 +27,15 @@ public class Goals {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(columnDefinition = "int default 0")
-    private Integer progress;
+    @Column(name = "progress", nullable = false)
+    private Integer progress = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private GoalStatus status = GoalStatus.PENDING;
 
     @Column(name = "due_date", nullable = false)
-    private Date dueDate;
+    private LocalDateTime dueDate;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
