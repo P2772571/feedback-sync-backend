@@ -23,12 +23,12 @@ public class Feedback {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean isSharedWithManager;
+    @Column(nullable = false)
+    private Boolean isSharedWithManager = false;
 
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "giver_id", nullable = false)
