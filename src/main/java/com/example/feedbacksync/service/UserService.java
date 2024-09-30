@@ -70,4 +70,11 @@ public class UserService {
         user.setUsername(username != null ? username : user.getUsername());
         return userRepository.save(user);
     }
+
+    /**
+     *
+     */
+    public User findUserByUserId(Long id){
+        return userRepository.findById(id).orElse(null);
+    }
 }
