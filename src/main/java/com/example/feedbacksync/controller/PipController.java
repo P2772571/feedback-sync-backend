@@ -9,6 +9,7 @@ import com.example.feedbacksync.service.PipService;
 
 @RestController
 @RequestMapping("/api/pips")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PipController {
 
 

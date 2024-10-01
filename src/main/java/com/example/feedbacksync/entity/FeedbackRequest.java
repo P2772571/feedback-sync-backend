@@ -25,10 +25,10 @@ public class FeedbackRequest {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private RequestStatus status;
+    private RequestStatus status = RequestStatus.PENDING;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     // Relationships
     @ManyToOne
