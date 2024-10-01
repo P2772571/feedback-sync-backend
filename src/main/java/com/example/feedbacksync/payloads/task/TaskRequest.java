@@ -12,5 +12,7 @@ import lombok.Setter;
 public class TaskRequest {
     private String title;
     private Boolean isCompleted;
+    private Long goalId;
+    private Long pipId;
 
 }

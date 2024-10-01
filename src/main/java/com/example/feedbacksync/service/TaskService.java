@@ -3,10 +3,12 @@ package com.example.feedbacksync.service;
 import org.springframework.stereotype.Service;
 
 import com.example.feedbacksync.entity.Goal;
+import com.example.feedbacksync.entity.Pip;
 import com.example.feedbacksync.entity.Task;
 import com.example.feedbacksync.payloads.task.TaskRequest;
 import com.example.feedbacksync.payloads.task.TaskResponse;
 import com.example.feedbacksync.repository.GoalsRepository;
+import com.example.feedbacksync.repository.PipRepository;
 import com.example.feedbacksync.repository.TaskRepository;
 
 import java.util.*;;
@@ -17,32 +19,39 @@ import java.util.*;;
 @Service
 public class TaskService {
 
-    private TaskRepository taskRepository;
-    private GoalsRepository goalsRepository;
+    private final TaskRepository taskRepository;
+    private final GoalsRepository goalsRepository;
+    private final PipRepository pipRepository;
 
     /**
      * Constructor
      * @param taskRepository TaskRepository
      * @param goalsRepository GoalsRepository
+     * @param pipRepository PipRepository
      */
-    public TaskService(TaskRepository taskRepository, GoalsRepository goalsRepository) {
+    public TaskService(TaskRepository taskRepository, GoalsRepository goalsRepository, PipRepository pipRepository) {
         this.taskRepository = taskRepository;
         this.goalsRepository = goalsRepository;
+        this.pipRepository = pipRepository;
     }
 
     /**
      * Create a task for a goal
-     * @param goalId Long 
      * @param taskRequest TaskRequest
      * @return TaskResponse
      */
-    public TaskResponse createTask (Long goalId, TaskRequest taskRequest) {
-        Goal goal = goalsRepository.findById(goalId).orElse(null);
-        if (goal == null) {
-            return null;
+    public TaskResponse createTask (TaskRequest taskRequest) {
+        Goal goal = taskRequest.getGoalId() != null ? goalsRepository.findById(taskRequest.getGoalId()).orElse(null):null;
+        Pip pip = taskRequest.getPipId() != null ? pipRepository.findById(taskRequest.getPipId()).orElse(null): null;
+        if (goal != null) {
+           return createTask(goal, taskRequest);
         }
-
-        return createTask(goal, taskRequest);
+        else if (pip  != null){
+            return  createTask(pip, taskRequest);
+        }
+        else {
+            throw new IllegalArgumentException("Either GoalId or PipId is incorrect");
+        }
     }
 
     /**
@@ -57,9 +66,9 @@ public class TaskService {
         Task task = new Task();
         task.setGoal(goal);
         task.setTaskName(taskRequest.getTitle());
-        task.setIsCompleted(taskRequest.getIsCompleted() != null ? taskRequest.getIsCompleted() : false);
+        task.setIsCompleted(taskRequest.getIsCompleted() != null && taskRequest.getIsCompleted());
 
-        taskRepository.save(task);
+        task = taskRepository.save(task);
 
         TaskResponse taskResponse = new TaskResponse();
         taskResponse.setTaskId(task.getTaskId());
@@ -69,8 +78,39 @@ public class TaskService {
         if (task.getGoal() != null) {
             updateGoalProgress(task.getGoal());
         }
+
+        
         return taskResponse;
     }
+
+    /**
+     * Create a task for a pip
+     * @param pip Pip
+     * @param taskRequest String
+     * @return TaskResponse 
+     */
+    public TaskResponse createTask (Pip pip, TaskRequest taskRequest) {
+        Task task = new Task();
+        task.setPip(pip);
+        task.setTaskName(taskRequest.getTitle());
+        task.setIsCompleted(taskRequest.getIsCompleted() != null ? taskRequest.getIsCompleted() : false);
+
+        task = taskRepository.save(task);
+
+        TaskResponse taskResponse = new TaskResponse();
+        taskResponse.setTaskId(task.getTaskId());
+        taskResponse.setTaskName(task.getTaskName());
+        taskResponse.setIsCompleted(task.getIsCompleted());
+
+         if (task.getPip() != null) {
+             updatePipProgress(task.getPip());
+         }
+
+        return taskResponse;
+    }
+
+
+
 
     /**
      * Update a task
@@ -98,6 +138,10 @@ public class TaskService {
             updateGoalProgress(task.getGoal());
         }
 
+        if(task.getPip() != null) {
+            updatePipProgress(task.getPip());
+        }
+
         return taskResponse;
     }
 
@@ -112,6 +156,9 @@ public class TaskService {
                 deleteTask(task);
                 if (task.getGoal() != null) {
                     updateGoalProgress(task.getGoal());
+                }
+                if (task.getPip() != null) {
+                    updatePipProgress(task.getPip());
                 }
                 return true;
          }
@@ -147,6 +194,16 @@ public class TaskService {
         List<Task> tasks = taskRepository.findAllByGoal(goal);
         return getTaskResponses(tasks);
     }
+    /**
+     * Get all tasks for a pip
+     * @param pip Pip
+     * @return List of TaskResponse
+     */
+    public List<TaskResponse> getTasksByPip (Pip pip) {
+        List<Task> tasks = taskRepository.findAllByPip(pip);
+        return getTaskResponses(tasks);
+    }
+
 
     /**
      * Get all tasks for a goal 
@@ -177,7 +234,7 @@ public class TaskService {
      */
     public void updateGoalProgress(Goal goal) {
         List<Task> tasks = taskRepository.findAllByGoal(goal);
-        long completedTasks = tasks.stream().filter(task -> task.getIsCompleted()).count();
+        long completedTasks = tasks.stream().filter(Task::getIsCompleted).count();
         int totalTasks = tasks.size();
 
         // Calculate progress as a percentage
@@ -185,6 +242,22 @@ public class TaskService {
 
         goal.setProgress(progress);
         goalsRepository.save(goal);
+    }
+
+    /**
+     * Update the progress of a pip
+     * @param pip Pip
+     */
+    public void updatePipProgress(Pip pip) {
+        List<Task> tasks = taskRepository.findAllByPip(pip);
+        long completedTasks = tasks.stream().filter(Task::getIsCompleted).count();
+        int totalTasks = tasks.size();
+
+        // Calculate progress as a percentage
+        int progress = (int) ((completedTasks * 100.0) / totalTasks);
+
+        pip.setProgress(progress);
+        pipRepository.save(pip);
     }
         
     

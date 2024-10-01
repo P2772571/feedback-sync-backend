@@ -26,10 +26,10 @@ public class Pip {
     private String title;
 
     @Column(nullable = false)
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(nullable = false)
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @Column(name = "progress", nullable = false)
     private Integer progress = 0;
@@ -38,17 +38,17 @@ public class Pip {
     private String support;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20) default 'IMPROVEMENT'")
+    @Column(name = "outcome")
     private PipOutcome outcome;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20) default 'ACTIVE'")
-    private PipStatus status;
+    @Column(nullable = false )
+    private PipStatus status = PipStatus.ACTIVE;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     // Relationships
 

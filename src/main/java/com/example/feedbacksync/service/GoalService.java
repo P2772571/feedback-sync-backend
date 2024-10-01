@@ -144,7 +144,7 @@ public class GoalService {
 
     /**
      * This helper method covert Goal object to GoalResponse object
-     * @param userId  Long
+     * @param savedGoal  Goal
      * @return List of GoalResponse
      */
     private GoalResponse getGoalResponse (Goal savedGoal){
@@ -164,6 +164,5 @@ public class GoalService {
 
         return  response;
 
-    }   
-
+    }
 }

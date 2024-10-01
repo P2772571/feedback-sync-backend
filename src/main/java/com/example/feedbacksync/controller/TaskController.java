@@ -27,14 +27,15 @@ public class TaskController {
 
     /**
      * Create a task for a goal
-     * @param goalId Long goalId
      * @param taskRequest TaskRequest
      * @return ResponseEntity<?>
      */ 
-    @PostMapping("/{goalId}")
-    public ResponseEntity<?> createTask(@PathVariable Long goalId, @RequestBody TaskRequest taskRequest) {
+    @PostMapping
+        public ResponseEntity<?> createTask( @RequestBody TaskRequest taskRequest) {
         try{
-            return ResponseEntity.ok(taskService.createTask(goalId, taskRequest));
+            return ResponseEntity.ok(taskService.createTask(taskRequest));
+
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -59,7 +60,7 @@ public class TaskController {
     /**
      * Delete a task by taskId
      * @param taskId Long taskId
-     * @return ResponseEntity<?> 
+     * @return ResponseEntity<?>  
      */
     @DeleteMapping ("/{taskId}")
     public ResponseEntity<?> deleteTask(@PathVariable Long taskId) {
