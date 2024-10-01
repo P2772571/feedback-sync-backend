@@ -1,13 +1,18 @@
 package com.example.feedbacksync.service;
 
+import com.example.feedbacksync.entity.Profile;
 import com.example.feedbacksync.entity.User;
 import com.example.feedbacksync.entity.enums.Role;
 import com.example.feedbacksync.exceptions.UserAlreadyExistsException;
 import com.example.feedbacksync.payloads.authentication.SignupRequest;
+import com.example.feedbacksync.payloads.authentication.UsersWithProfileResponse;
+import com.example.feedbacksync.payloads.profile.ProfileResponse;
+import com.example.feedbacksync.repository.ProfileRepository;
 import com.example.feedbacksync.repository.UserRespository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -16,14 +21,19 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final ProfileService profileService;
+    private final ProfileRepository profileRepository;
+
     /**
      * Constructor for UserService class.
      * @param userRepository UserRespository object.
      * @param passwordEncoder PasswordEncoder object.
      */
-    public UserService(UserRespository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRespository userRepository, PasswordEncoder passwordEncoder, ProfileService profileService, ProfileRepository profileRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.profileService = profileService;
+        this.profileRepository = profileRepository;
     }
 
     /**
@@ -104,5 +114,78 @@ public class UserService {
      */
     public User findUserByUserId(Long id){
         return userRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * Delete User by User Id
+     * @param id - The user id
+     */
+    public void deleteUserByUserId(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    /**
+     * Find All Users
+     * @return  The list of users with profile
+     */
+    public List<UsersWithProfileResponse> findAllUsers() {
+        List<User> users = userRepository.findAll();
+        return fromUsers(users);
+    }
+
+    /**
+     * Find all users subordinates to a manager
+     * @return The list of users with profile
+     */
+    public List<UsersWithProfileResponse> findSubordinates(Long id) {
+        User manager = userRepository.findById(id).orElse(null);
+        if (manager == null) {
+            throw new RuntimeException("Manager not found with username: " + id);
+        }
+        List<Profile> profiles = profileRepository.findAllByManager(manager);
+        return fromProfiles(profiles);
+    }
+
+    /**
+     * Find all users with profile
+     * @param profiles - The list of profiles
+     * @return The list of users with profile
+     */
+    private List<UsersWithProfileResponse> fromProfiles(List<Profile> profiles) {
+        return profiles.stream().map(profile -> {
+            User user = profile.getUser();
+            ProfileResponse profileResponse = new ProfileResponse();
+            profileResponse.setProfileId(profile.getProfileId());
+            profileResponse.setFirstName(profile.getFirstName());
+            profileResponse.setLastName(profile.getLastName());
+            profileResponse.setJobTitle(profile.getJobTitle());
+            profileResponse.setEmail(user.getEmail());
+            profileResponse.setUsername(user.getUsername());
+            return fromUserAndProfile(user, profileResponse);
+
+        }).toList();
+    }
+
+
+
+
+
+    private   List<UsersWithProfileResponse> fromUsers(List<User> users) {
+        return users.stream().map(user -> {
+            ProfileResponse profile = profileService.getUserProfile(user.getUsername());
+            return fromUserAndProfile(user, profile);
+
+        }).toList();
+    }
+
+    private UsersWithProfileResponse fromUserAndProfile(User user, ProfileResponse profile) {
+        UsersWithProfileResponse response = new UsersWithProfileResponse();
+        response.setUserId(user.getId());
+        response.setUsername(user.getUsername());
+        response.setFullName(profile.getFullName());
+        response.setEmail(user.getEmail());
+        response.setRole(user.getRole().name());
+        response.setProfileId(profile.getProfileId());
+        return response;
     }
 }

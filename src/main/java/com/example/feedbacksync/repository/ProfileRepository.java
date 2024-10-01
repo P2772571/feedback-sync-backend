@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
     Profile findProfileByUser(User user);
-
     List<Profile> findAllByManager(User manager);  // Find all profiles of users managed by a manager
 }

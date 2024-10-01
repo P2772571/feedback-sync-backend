@@ -6,7 +6,6 @@ import com.example.feedbacksync.payloads.profile.ProfileRequest;
 import com.example.feedbacksync.payloads.profile.ProfileResponse;
 import com.example.feedbacksync.repository.ProfileRepository;
 import com.example.feedbacksync.repository.UserRespository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -163,5 +162,45 @@ public class ProfileService {
         response.setJobTitle(savedProfile.getJobTitle());
 
         return response;
+    }
+
+    /**
+     * Delete User Profile
+     * @param username - The username or email
+     */
+    public void deleteProfile(String username) {
+        User user = username.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") ? userRespository.findByEmail(username) : userRespository.findByUsername(username);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found with username or email: " + username);
+        }
+
+        Profile profile = profileRepository.findProfileByUser(user);
+        if (profile == null) {
+            throw new IllegalArgumentException("Profile not found for user: " + username);
+        }
+
+        profileRepository.delete(profile);
+    }
+
+    /**
+     * Get All profiles manager by a manager
+     * @return - The list of profile responses
+     */
+    public List<ProfileResponse> getManagedProfiles(User manager) {
+
+        List<Profile> profiles = profileRepository.findAllByManager(manager);
+        List<ProfileResponse> responses = new ArrayList<>();
+        for (Profile profile : profiles) {
+            ProfileResponse response = new ProfileResponse();
+            response.setProfileId(profile.getProfileId());
+            response.setFirstName(profile.getFirstName());
+            response.setLastName(profile.getLastName());
+            response.setJobTitle(profile.getJobTitle());
+            response.setEmail(profile.getUser().getEmail());
+            response.setUsername(profile.getUser().getUsername());
+            responses.add(response);
+        }
+
+        return responses;
     }
 }
