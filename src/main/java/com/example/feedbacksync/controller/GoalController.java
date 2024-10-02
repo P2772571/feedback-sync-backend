@@ -80,6 +80,23 @@ public class GoalController {
         }
     }
 
+    /**
+     * This method gets all the goals of user assigned by a manager.
+     * The method returns a ResponseEntity with the list of goals and HttpStatus OK.
+     * @param userId Long id of the user whose goals are to be fetched.
+     * @param managerId Long id of the manager who assigned the goals.
+     * @return ResponseEntity with the list of goals.
+     */
+    @GetMapping("/employee/{userId}/manager/{managerId}")
+    public ResponseEntity<?> getGoalsByUserIdAndManagerId(@PathVariable("userId") Long userId, @PathVariable("managerId") Long managerId){
+        try{
+            return new ResponseEntity<>(goalService.getAllAssignedGoalsToUserByManager(userId, managerId), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 
     /**
      * This method gets a goal by its id.

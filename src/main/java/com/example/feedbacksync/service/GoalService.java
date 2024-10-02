@@ -101,6 +101,8 @@ public class GoalService {
             throw new IllegalArgumentException("User not found with given id "+ userId);
         }
         List<Goal> goals = goalsRepository.findAllByUser(user);
+        // filter goals based on assignedBy = null
+        goals.removeIf(goal -> goal.getAssignedBy() == null);
         return getGoalResponse(goals);
     }
 
@@ -115,6 +117,27 @@ public class GoalService {
             throw new IllegalArgumentException("Manager not found with given id "+ managerId);
         }
         List<Goal> goals = goalsRepository.findAllByAssignedBy(manager);
+        return getGoalResponse(goals);
+    }
+
+    /**
+     * Get all assigned goals to a user by a manager
+     * @param userId  Long
+     * @param managerId  Long
+     * @return List of GoalResponse
+     * @throws IllegalArgumentException if user or manager not found
+     *
+     */
+    public List<GoalResponse> getAllAssignedGoalsToUserByManager(Long userId, Long managerId) {
+        User user = userService.findUserByUserId(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found with given id " + userId);
+        }
+        User manager = userService.findUserByUserId(managerId);
+        if (manager == null) {
+            throw new IllegalArgumentException("Manager not found with given id " + managerId);
+        }
+        List<Goal> goals = goalsRepository.findAllByAssignedByAndUser(manager, user);
         return getGoalResponse(goals);
     }
 

@@ -11,4 +11,5 @@ public interface GoalsRepository extends JpaRepository<Goal, Long> {
 
     List<Goal> findAllByUser(User user);
     List<Goal> findAllByAssignedBy(User user);
+    List<Goal> findAllByAssignedByAndUser(User assignedBy, User user);
 }

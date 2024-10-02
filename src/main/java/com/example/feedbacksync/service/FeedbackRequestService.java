@@ -23,7 +23,6 @@ public class FeedbackRequestService {
     private final ProfileService profileService;
     /**
      * Constructor-based dependency injection to inject the FeedbackRequestRepository
-     * @param feedbackRequestRepository
      */
     public FeedbackRequestService(FeedbackRequestRepository feedbackRequestRepository, UserRespository userRepository, ProfileService profileService) {
         this.feedbackRequestRepository = feedbackRequestRepository;
@@ -85,10 +84,9 @@ public class FeedbackRequestService {
     }
 
     /**
-     * Update feedback 
-     * @param feedbackRequests
-     * @param id
-     * @return 
+     * Update feedback
+     * @param id    ID of the feedback request
+     * @return  RequestFeedbackResponse
      */
     public RequestFeedbackResponse update(Long id){
         FeedbackRequest feedbackRequest = feedbackRequestRepository.findById(id).orElse(null);
@@ -151,6 +149,7 @@ public class FeedbackRequestService {
         response.setRequesteeName(requesteeProfile.getFullName() != null ? requesteeProfile.getFullName() : requesteeProfile.getUsername());
         response.setStatus(feedbackRequest.getStatus().name());
         response.setCreatedAt(feedbackRequest.getCreatedAt());
+        response.setRequesterId(feedbackRequest.getRequester().getId());
         return response;
     }
     
