@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaskRequest {
-    private String title;
+    private String taskName;
     private Boolean isCompleted;
     private Long goalId;
     private Long pipId;

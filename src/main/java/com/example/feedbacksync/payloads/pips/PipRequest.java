@@ -22,7 +22,7 @@ public class PipRequest {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String support;
-    private PipOutcome outcome;
+    private PipOutcome outcome = PipOutcome.IMPROVEMENT;
     private Long employeeId;
     private Long managerId;
     private PipStatus status;

@@ -64,7 +64,7 @@ public class FeedbackRequestService {
         if (user == null) {
             return new ArrayList<>();
         }
-        List<FeedbackRequest> feedbackRequests = feedbackRequestRepository.findAllByRequestee(user);
+        List<FeedbackRequest> feedbackRequests = feedbackRequestRepository.findAllByRequesteeAndStatus(user, RequestStatus.PENDING);
         return feedbackRequests.stream().map(this::getRequestFeedbackResponse).collect(Collectors.toList());
     }
 
@@ -98,6 +98,7 @@ public class FeedbackRequestService {
         return getRequestFeedbackResponse(feedbackRequestRepository.save(feedbackRequest));
     }
 
+
     /**
      * Method to Get all feedback requests with a specific status
      * @param status status of the feedback request
@@ -120,6 +121,21 @@ public class FeedbackRequestService {
         }
 
         return getRequestFeedbackResponse(feedbackRequest);
+    }
+
+    /**
+     * Method to Delete a feedback request
+     * @param requestId ID of the feedback request
+     * @return boolean
+     */
+    public boolean deleteFeedbackRequest(Long requestId){
+        FeedbackRequest feedbackRequest = feedbackRequestRepository.findById(requestId).orElse(null);
+        if (feedbackRequest == null){
+            throw new IllegalArgumentException("Feedback Request not found with given id "+ requestId);
+        }
+
+        feedbackRequestRepository.delete(feedbackRequest);
+        return true;
     }
     
 

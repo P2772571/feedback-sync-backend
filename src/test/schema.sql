@@ -301,7 +301,7 @@ CREATE TABLE PIP (
     pip_id SERIAL PRIMARY KEY,           -- Unique identifier for the PIP
     employee_id INT NOT NULL,            -- Foreign key referencing the employee assigned the PIP
     manager_id INT NOT NULL,             -- Foreign key referencing the manager who set the PIP
-    objectives TEXT NOT NULL,            -- High-level objectives for the employee to meet
+    title TEXT NOT NULL,            -- High-level objectives for the employee to meet
     start_date DATE NOT NULL,            -- Start date of the PIP
     end_date DATE NOT NULL,              -- End date of the PIP
     progress INT DEFAULT 0,              -- Progress percentage based on task completion
@@ -318,12 +318,13 @@ CREATE TABLE PIP (
 -- Generalized Tasks Table for Goals and PIPs
 CREATE TABLE Tasks (
     task_id SERIAL PRIMARY KEY,              -- Unique identifier for each task
-    related_id INT NOT NULL,                 -- Foreign key referencing either a Goal or a PIP
-    task_type VARCHAR(20) NOT NULL,          -- Specifies whether the task is for a Goal or PIP ('goal' or 'pip')
+    goal_id INT DEFAULT NULL,                -- Foreign key referencing the goal (NULL if the task is for a PIP)
+    pip_id INT DEFAULT NULL,                 -- Foreign key referencing the PIP (NULL if the task is for a goal)
     task_name VARCHAR(255) NOT NULL,         -- Name or description of the task
-    is_completed BOOLEAN DEFAULT FALSE,      -- Whether the task is completed
+    is_completed BOOLEAN DEFAULT FALSE  ,      -- Whether the task is completed
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- When the task was created
-    FOREIGN KEY (related_id) REFERENCES Goals(goal_id) ON DELETE CASCADE -- Link to Goals table if task_type is 'goal'
-    OR REFERENCES PIP(pip_id) ON DELETE CASCADE                      -- Link to PIP table if task_type is 'pip'
+    FOREIGN KEY (goal_id) REFERENCES Goals(goal_id) ON DELETE CASCADE,  -- Link to Goals if the task is for a goal
+    FOREIGN KEY (pip_id) REFERENCES PIP(pip_id) ON DELETE CASCADE       -- Link to PIP if the task is for a PIP
 );
+
 

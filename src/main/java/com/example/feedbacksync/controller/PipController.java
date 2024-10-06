@@ -1,5 +1,6 @@
 package com.example.feedbacksync.controller;
 
+import com.example.feedbacksync.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,15 @@ public class PipController {
 
 
     private final PipService pipService;
+    private final TaskService taskService;
 
     /**
      * Constructor
      * @param pipService PipService
      */
-    public PipController(PipService pipService){
+    public PipController(PipService pipService, TaskService taskService){
         this.pipService = pipService;
+        this.taskService = taskService;
     }
 
     /**
@@ -98,17 +101,13 @@ public class PipController {
     @DeleteMapping("/{pipId}")
     public ResponseEntity<?> deletePip(@PathVariable("pipId") Long pipId){
         try {
+
             if (!pipService.deletePip(pipId)) {
                 throw new Exception("Pip not found");
             }
-            return ResponseEntity.ok("Pip deleted successfully");
+            return ResponseEntity.ok(pipId);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-
-
-
-    
 }

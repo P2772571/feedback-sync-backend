@@ -87,7 +87,27 @@ public class FeedbackRequestController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-    
 
-    
+    /**
+     * Delete a feedback request
+     * @param feedbackRequestId - The feedback request id
+     * @return ResponseEntity<?>
+     *
+     */
+    @DeleteMapping("/{feedbackRequestId}")
+    public ResponseEntity<?> deleteFeedbackRequest(@PathVariable Long feedbackRequestId) {
+        try {
+             boolean isDeleted = feedbackRequestService.deleteFeedbackRequest(feedbackRequestId);
+                if (isDeleted) {
+                    return new ResponseEntity<>(feedbackRequestId, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(-1, HttpStatus.NOT_FOUND);
+                }
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
 }

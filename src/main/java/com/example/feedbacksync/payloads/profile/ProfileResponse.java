@@ -20,6 +20,7 @@ public class ProfileResponse {
     private String jobTitle;
     private String email;
     private String username;
+    private Long managerId;
     private ProfileResponse manager;
     private List<ProfileResponse> employees;
 

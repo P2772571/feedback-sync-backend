@@ -3,6 +3,7 @@ package com.example.feedbacksync.controller;
 import com.example.feedbacksync.payloads.task.TaskRequest;
 import com.example.feedbacksync.service.TaskService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,9 +67,9 @@ public class TaskController {
     public ResponseEntity<?> deleteTask(@PathVariable Long taskId) {
         try{
             if (!taskService.deleteTask(taskId)) {
-                throw new Exception("Task not found");
+                throw new RuntimeException("Task not found");
             }
-            return ResponseEntity.ok("Task deleted successfully");
+            return new ResponseEntity<>(taskId, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

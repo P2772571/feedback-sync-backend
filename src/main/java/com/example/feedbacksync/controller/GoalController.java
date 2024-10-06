@@ -126,8 +126,8 @@ public class GoalController {
      * @param id Long id of the goal to be updated.
      * @return ResponseEntity with the updated goal response or error message.
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateGoal(@RequestBody GoalRequest request, @PathVariable("id") Long id){
+    @PutMapping("/{goalId}")
+    public ResponseEntity<?> updateGoal(@RequestBody GoalRequest request, @PathVariable("goalId") Long id){
         try{
             GoalResponse response =  goalService.update(request, id);
             return  new ResponseEntity<>(response, HttpStatus.OK);

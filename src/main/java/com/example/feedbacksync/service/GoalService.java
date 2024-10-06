@@ -2,6 +2,7 @@ package com.example.feedbacksync.service;
 
 import com.example.feedbacksync.entity.Goal;
 import com.example.feedbacksync.entity.User;
+import com.example.feedbacksync.entity.enums.GoalStatus;
 import com.example.feedbacksync.payloads.goals.GoalRequest;
 import com.example.feedbacksync.payloads.goals.GoalResponse;
 import com.example.feedbacksync.payloads.profile.ProfileResponse;
@@ -85,7 +86,15 @@ public class GoalService {
         if (goal == null){
             throw new IllegalArgumentException("Goal not found with given id "+ goalId);
         }
-        goal.setStatus(request.getStatus());
+        goal.setDescription(request.getDescription() != null ? request.getDescription() : goal.getDescription());
+        goal.setGoalName(request.getGoalName() != null ? request.getGoalName() : goal.getGoalName());
+        goal.setStatus(request.getStatus() != null ? request.getStatus() : goal.getStatus());
+        if (request.getStatus() == GoalStatus.COMPLETED){
+            goal.setProgress(100);
+        } else {
+            goal.setProgress(request.getProgress() != null ? request.getProgress() : goal.getProgress());
+        }
+        goal.setDueDate(request.getDueDate() != null ? request.getDueDate() : goal.getDueDate());
         return getGoalResponse(goalsRepository.save(goal));
 
     }
@@ -102,7 +111,7 @@ public class GoalService {
         }
         List<Goal> goals = goalsRepository.findAllByUser(user);
         // filter goals based on assignedBy = null
-        goals.removeIf(goal -> goal.getAssignedBy() == null);
+        goals.removeIf(goal -> goal.getAssignedBy() != null);
         return getGoalResponse(goals);
     }
 

@@ -13,4 +13,6 @@ public class TaskResponse {
     private Long taskId;
     private String taskName;
     private Boolean isCompleted;
+    private Long goalId;
+    private Long pipId;
 }

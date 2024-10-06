@@ -1,5 +1,6 @@
 package com.example.feedbacksync.controller;
 
+import com.example.feedbacksync.payloads.authentication.SignupRequest;
 import com.example.feedbacksync.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,4 +48,28 @@ public class UserController {
         }
 
     }
+
+    /**
+     * Get all users with their profiles
+     * @return - The list of all users with their profiles
+     */
+    @GetMapping()
+    public ResponseEntity<?> getAllUsersForAdmin() {
+        try{
+            return ResponseEntity.ok(userService.findAllUsersWithProfileForAdmin());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("An error occurred while fetching user");
+        }
+
+    }
+
+    @PostMapping("/create-user")
+    public ResponseEntity<?> createUser(@RequestBody SignupRequest userRequest) {
+        try {
+            return ResponseEntity.ok(userService.createNewUser(userRequest));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("An error occurred while creating user");
+        }
+    }
+
 }

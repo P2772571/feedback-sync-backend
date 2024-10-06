@@ -6,9 +6,11 @@ import com.example.feedbacksync.entity.enums.Role;
 import com.example.feedbacksync.exceptions.UserAlreadyExistsException;
 import com.example.feedbacksync.payloads.authentication.SignupRequest;
 import com.example.feedbacksync.payloads.authentication.UsersWithProfileResponse;
+import com.example.feedbacksync.payloads.profile.ProfileRequest;
 import com.example.feedbacksync.payloads.profile.ProfileResponse;
 import com.example.feedbacksync.repository.ProfileRepository;
 import com.example.feedbacksync.repository.UserRespository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +63,39 @@ public class UserService {
 
         // Save user to the database
         return userRepository.save(newUser);
+    }
+
+    public UsersWithProfileResponse createNewUser(SignupRequest request) {
+        // Check if user already exists by username
+        if (userRepository.findByUsername(request.getUsername()) != null) {
+            throw new UserAlreadyExistsException("Username is already taken.");
+        }
+
+        // Check if user already exists by email
+        if (userRepository.findByEmail(request.getEmail()) != null) {
+            throw new UserAlreadyExistsException("Email is already registered.");
+        }
+
+        // Create a new User entity
+        User newUser = new User();
+        newUser.setUsername(request.getUsername());
+        newUser.setEmail(request.getEmail());
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));  // Hash the password
+        newUser.setRole( request.getRole() !=  null ? Role.valueOf(request.getRole().toUpperCase()): Role.EMPLOYEE);  // Default role (You can adjust this based on your requirements)
+
+        // Save user to the database
+         newUser = userRepository.save(newUser);
+
+         // Create Profile by Using Profile Requeset
+        ProfileRequest profileRequest = new ProfileRequest();
+        profileRequest.setFirstName("");
+        profileRequest.setLastName("");
+        profileRequest.setJobTitle("");
+        profileRequest.setUsername(newUser.getUsername());
+        profileRequest.setEmail(newUser.getEmail());
+        ProfileResponse profileResponse = profileService.createUserProfile(newUser.getUsername(), profileRequest);
+
+        return fromUserAndProfile(newUser, profileResponse);
     }
 
     /**
@@ -166,10 +201,22 @@ public class UserService {
         }).toList();
     }
 
+    /**
+     * Find all the users and their profile for admin
+     * @return The list of users with profile
+     */
+
+    public List<UsersWithProfileResponse> findAllUsersWithProfileForAdmin() {
+        List<User> users = userRepository.findAll();
+        return fromUsers(users);
+    }
 
 
-
-
+    /**
+     * Convert List of User to List of UsersWithProfileResponse
+     * @param users - The list of users
+     * @return The list of users with profile
+     */
     private   List<UsersWithProfileResponse> fromUsers(List<User> users) {
         return users.stream().map(user -> {
             ProfileResponse profile = profileService.getUserProfile(user.getUsername());

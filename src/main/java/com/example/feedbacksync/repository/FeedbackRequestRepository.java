@@ -15,7 +15,7 @@ public interface FeedbackRequestRepository extends JpaRepository<FeedbackRequest
     List<FeedbackRequest> findAllByRequester(User requester);
 
     // Find all feedback requests by requestee (the user providing feedback)
-    List<FeedbackRequest> findAllByRequestee(User requestee);
+    List<FeedbackRequest> findAllByRequesteeAndStatus(User requestee, RequestStatus status);
 
     // Find all feedback requests with a specific status (e.g., PENDING, COMPLETED)
     List<FeedbackRequest> findAllByStatus(RequestStatus status);

@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "pips")
@@ -59,5 +60,9 @@ public class Pip {
     @ManyToOne
     @JoinColumn(name = "manager_id", nullable = false)
     private User manager;
+
+    // Cascade delete tasks when a Pip is deleted
+    @OneToMany(mappedBy = "pip", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks;
 
 }

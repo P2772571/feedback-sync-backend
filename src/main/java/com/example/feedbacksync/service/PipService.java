@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.feedbacksync.payloads.task.TaskResponse;
 import org.springframework.stereotype.Service;
 
 import com.example.feedbacksync.entity.Pip;
@@ -80,8 +81,9 @@ public class PipService {
      * @return Pip
      * @throws Exception if pip not found
      */
-    public Pip getPipById(Long id) throws Exception{
-        return pipRepository.findById(id).orElseThrow(() -> new Exception("Pip not found with given id "+ id));
+    public PipResponse getPipById(Long id) throws Exception{
+        Pip pip =  pipRepository.findById(id).orElseThrow(() -> new Exception("Pip not found with given id "+ id));
+        return getPipResponse(pip);
     }
 
     /**
@@ -116,6 +118,12 @@ public class PipService {
         if (pip == null){
             return false;
         }
+       List<TaskResponse> tasks = taskService.getTasksByPip(pip);
+        for (TaskResponse task: tasks){
+            taskService.deleteTask(task.getTaskId());
+        }
+
+
         pipRepository.delete(pip);
         return true;
     } 

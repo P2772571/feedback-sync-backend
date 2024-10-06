@@ -145,4 +145,14 @@ public class ProfileController {
              return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping("/assign/{managerId}/{employeeId}")
+    public ResponseEntity<?> assignManager(@PathVariable Long managerId, @PathVariable Long employeeId){
+        try{
+            profileService.assignEmployeeToManager(managerId, employeeId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

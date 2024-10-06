@@ -1,5 +1,7 @@
 package com.example.feedbacksync.service;
 
+import com.example.feedbacksync.entity.enums.GoalStatus;
+import com.example.feedbacksync.entity.enums.PipStatus;
 import org.springframework.stereotype.Service;
 
 import com.example.feedbacksync.entity.Goal;
@@ -65,7 +67,7 @@ public class TaskService {
 
         Task task = new Task();
         task.setGoal(goal);
-        task.setTaskName(taskRequest.getTitle());
+        task.setTaskName(taskRequest.getTaskName());
         task.setIsCompleted(taskRequest.getIsCompleted() != null && taskRequest.getIsCompleted());
 
         task = taskRepository.save(task);
@@ -74,6 +76,8 @@ public class TaskService {
         taskResponse.setTaskId(task.getTaskId());
         taskResponse.setTaskName(task.getTaskName());
         taskResponse.setIsCompleted(task.getIsCompleted());
+        taskResponse.setGoalId(task.getGoal() != null ? task.getGoal().getGoalId() : null);
+        taskResponse.setPipId(task.getPip() != null ? task.getPip().getPipId() : null);
 
         if (task.getGoal() != null) {
             updateGoalProgress(task.getGoal());
@@ -92,7 +96,7 @@ public class TaskService {
     public TaskResponse createTask (Pip pip, TaskRequest taskRequest) {
         Task task = new Task();
         task.setPip(pip);
-        task.setTaskName(taskRequest.getTitle());
+        task.setTaskName(taskRequest.getTaskName());
         task.setIsCompleted(taskRequest.getIsCompleted() != null ? taskRequest.getIsCompleted() : false);
 
         task = taskRepository.save(task);
@@ -101,6 +105,8 @@ public class TaskService {
         taskResponse.setTaskId(task.getTaskId());
         taskResponse.setTaskName(task.getTaskName());
         taskResponse.setIsCompleted(task.getIsCompleted());
+        taskResponse.setGoalId(task.getGoal() != null ? task.getGoal().getGoalId() : null);
+        taskResponse.setPipId(task.getPip() != null ? task.getPip().getPipId() : null);
 
          if (task.getPip() != null) {
              updatePipProgress(task.getPip());
@@ -124,15 +130,19 @@ public class TaskService {
             return null;
         }
 
-        task.setTaskName(taskRequest.getTitle());
-        task.setIsCompleted(taskRequest.getIsCompleted() != null ? taskRequest.getIsCompleted() : false);
+        task.setTaskName(taskRequest.getTaskName());
+            task.setIsCompleted(taskRequest.getIsCompleted() != null ? taskRequest.getIsCompleted() : false);
 
-        taskRepository.save(task);
+
+
+        task = taskRepository.save(task);
 
         TaskResponse taskResponse = new TaskResponse();
         taskResponse.setTaskId(task.getTaskId());
         taskResponse.setTaskName(task.getTaskName());
         taskResponse.setIsCompleted(task.getIsCompleted());
+        taskResponse.setGoalId(task.getGoal() != null ? task.getGoal().getGoalId() : null);
+        taskResponse.setPipId(task.getPip() != null ? task.getPip().getPipId() : null);
 
         if(task.getGoal() != null) {
             updateGoalProgress(task.getGoal());
@@ -224,6 +234,8 @@ public class TaskService {
         taskResponse.setTaskId(task.getTaskId());
         taskResponse.setTaskName(task.getTaskName());
         taskResponse.setIsCompleted(task.getIsCompleted());
+        taskResponse.setGoalId(task.getGoal() != null ? task.getGoal().getGoalId() : null);
+        taskResponse.setPipId(task.getPip() != null ? task.getPip().getPipId() : null);
 
         return taskResponse;
     }
@@ -239,6 +251,16 @@ public class TaskService {
 
         // Calculate progress as a percentage
         int progress = (int) ((completedTasks * 100.0) / totalTasks);
+        if (progress == 100) {
+            goal.setStatus(GoalStatus.COMPLETED);
+        }
+        else if (progress > 0) {
+            goal.setStatus(GoalStatus.IN_PROGRESS);
+        }
+        else {
+            goal.setStatus(GoalStatus.PENDING);
+        }
+
 
         goal.setProgress(progress);
         goalsRepository.save(goal);
@@ -255,6 +277,16 @@ public class TaskService {
 
         // Calculate progress as a percentage
         int progress = (int) ((completedTasks * 100.0) / totalTasks);
+
+        if (progress == 100) {
+            pip.setStatus(PipStatus.COMPLETED);
+        }
+        else if (progress > 0) {
+            pip.setStatus(PipStatus.ACTIVE);
+        }
+        else {
+            pip.setStatus(PipStatus.PENDING);
+        }
 
         pip.setProgress(progress);
         pipRepository.save(pip);

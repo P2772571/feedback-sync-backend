@@ -61,6 +61,7 @@ public class ProfileService {
             case EMPLOYEE:
                User manager = profile.getManager();
                if (manager != null){
+                   response.setManagerId(manager.getId());
                    Profile managerProfile = profileRepository.findProfileByUser(manager);
                    ProfileResponse managerResponse = new ProfileResponse();
                         managerResponse.setProfileId(managerProfile.getProfileId());
@@ -113,9 +114,9 @@ public class ProfileService {
 
         Profile profile = new Profile();
         profile.setUser(user);
-        profile.setFirstName(profileRequest.getFirstName());
-        profile.setLastName(profileRequest.getLastName());
-        profile.setJobTitle(profileRequest.getJobTitle());
+        profile.setFirstName(profileRequest.getFirstName() != null? profileRequest.getFirstName() : user.getUsername());
+        profile.setLastName(profileRequest.getLastName() != null? profileRequest.getLastName() : user.getUsername());
+        profile.setJobTitle(profileRequest.getJobTitle() != null? profileRequest.getJobTitle() : "Employee");
 
 
         Profile  savedProfile =profileRepository.save(profile);
@@ -180,6 +181,31 @@ public class ProfileService {
         }
 
         profileRepository.delete(profile);
+    }
+
+    /**
+     * Assignn employeee to a manager
+     * @param managerId - The manager ID
+     *  @param employeeId - The employee username
+     */
+    public void assignEmployeeToManager(Long managerId, Long employeeId) {
+        User manager = userRespository.findById(managerId).orElse(null);
+        if (manager == null) {
+            throw new IllegalArgumentException("Manager not found with id: " + managerId);
+        }
+
+        User employee = userRespository.findById(employeeId).orElse(null);
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee not found with id: " + employeeId);
+        }
+
+        Profile employeeProfile = profileRepository.findProfileByUser(employee);
+        if (employeeProfile == null) {
+            throw new IllegalArgumentException("Profile not found for employee: " + employee.getUsername());
+        }
+
+        employeeProfile.setManager(manager);
+        profileRepository.save(employeeProfile);
     }
 
     /**

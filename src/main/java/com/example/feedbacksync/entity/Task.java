@@ -36,4 +36,5 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pip_id", nullable = true) // Task can be associated with a PIP
     private Pip pip;
+
 }
