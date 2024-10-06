@@ -1,5 +1,5 @@
-package com.example.feedbacksync.entity.enums;
+    package com.example.feedbacksync.entity.enums;
 
-public enum RequestStatus {
-    PENDING, COMPLETED
-}
+    public enum RequestStatus {
+        PENDING, COMPLETED
+    }

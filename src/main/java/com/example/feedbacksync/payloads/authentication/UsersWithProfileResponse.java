@@ -1,6 +1,6 @@
 package com.example.feedbacksync.payloads.authentication;
 
-
+import com.example.feedbacksync.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,17 +8,17 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Getter
 @Setter
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor
-public class LoginResponse {
-    // id
-    private Long id;
+@AllArgsConstructor
+public class UsersWithProfileResponse {
+    private Long userId;
     private String username;
+    private String fullName;
     private String email;
-    private String accessToken;
-    private String refreshToken;  // Add refresh token field
-    private List<String> roles;
+    private String role;
+    private Long profileId;
+
 
 }

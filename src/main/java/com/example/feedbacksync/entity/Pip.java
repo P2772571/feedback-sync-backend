@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name = "pip")
+@Table(name = "pips")
 @Setter
 @Getter
 @NoArgsConstructor
@@ -21,26 +23,46 @@ public class Pip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pipId;
 
-    @Column(name = "objectives", nullable = false)
-    private String objectives;
+    @Column(name = "title", nullable = false)
+    private String title;
 
-    @Column(name = "timeline", nullable = false)
-    private String timeline;
+    @Column(nullable = false)
+    private LocalDateTime startDate;
+
+    @Column(nullable = false)
+    private LocalDateTime endDate;
+
+    @Column(name = "progress", nullable = false)
+    private Integer progress = 0;
 
     @Column(name = "support", nullable = false)
     private String support;
 
-    @Column(name = "outcome", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "outcome")
     private PipOutcome outcome;
 
-    @Column(name = "status", nullable = false)
-    private PipStatus status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false )
+    private PipStatus status = PipStatus.ACTIVE;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     // Relationships
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private User employee;
+
+    @ManyToOne
+    @JoinColumn(name = "manager_id", nullable = false)
+    private User manager;
+
+    // Cascade delete tasks when a Pip is deleted
+    @OneToMany(mappedBy = "pip", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks;
 
 }

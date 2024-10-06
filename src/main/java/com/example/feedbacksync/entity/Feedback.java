@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "feedback")
+@Table(name = "feedbacks")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,11 +23,19 @@ public class Feedback {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private Boolean isSharedWithManager = false;
 
-    // Relationships
-    // giver
-    // receiver
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @ManyToOne
+    @JoinColumn(name = "giver_id", nullable = false)
+    private User giver;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", nullable = false)
+    private User receiver;
 
 }

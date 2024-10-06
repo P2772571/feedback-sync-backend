@@ -3,6 +3,7 @@ package com.example.feedbacksync.controller;
 import com.example.feedbacksync.entity.User;
 import com.example.feedbacksync.jwt.JwtBlackListService;
 import com.example.feedbacksync.jwt.JwtUtils;
+import com.example.feedbacksync.payloads.authentication.ChangePasswordRequest;
 import com.example.feedbacksync.payloads.authentication.LoginRequest;
 import com.example.feedbacksync.payloads.authentication.LoginResponse;
 import com.example.feedbacksync.payloads.authentication.SignupRequest;
@@ -15,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * AuthController class to handle authentication related operations
+ * This class is used to authenticate the user, register a new user, and handle forgot password
+ */
 @RestController
 @RequestMapping("/public/api/auth")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
     private final JwtUtils jwtUtils;
@@ -36,6 +41,13 @@ public class AuthController {
     private final UserService userService;
     private final JwtBlackListService jwtBlackListService;
 
+    /**
+     * Constructor for AuthController class.
+     * @param jwtUtils JwtUtils object.
+     * @param authenticationManager AuthenticationManager object.
+     * @param userService UserService object.
+     * @param jwtBlackListService JwtBlackListService object.
+     */
     public AuthController(JwtUtils jwtUtils, AuthenticationManager authenticationManager, UserService userService, JwtBlackListService jwtBlackListService, JwtBlackListService jwtBlackListService1) {
         this.jwtUtils = jwtUtils;
         this.authenticationManager = authenticationManager;
@@ -76,7 +88,7 @@ public class AuthController {
             role.add(authority);
         }
 
-        LoginResponse response = new LoginResponse(user.getId(), userDetails.getUsername(), jwtToken,refreshToken, role);
+        LoginResponse response = new LoginResponse(user.getId(),user.getUsername(), user.getEmail(), jwtToken,refreshToken, role);
         return ResponseEntity.ok(response);
 
     }
@@ -122,7 +134,7 @@ public class AuthController {
         }
 
 
-        LoginResponse response = new LoginResponse( user.getId(), userDetails.getUsername(), accessToken, refreshToken, roles);
+        LoginResponse response = new LoginResponse( user.getId(), user.getUsername(), user.getEmail(), accessToken, refreshToken, roles);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -167,6 +179,43 @@ public class AuthController {
         response.put("message", "Logout successful");
         return new ResponseEntity<>(response, HttpStatus.OK);
 
+
+    }
+
+    /**
+     * Change User's Password
+     */
+    @CrossOrigin(origins = "http://localhost:5173")
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest requestBody){
+        try{
+            // Get user from username then check if the old password is correct
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userService.findUserByUsernameOrEmail(username);
+
+            if (user == null){
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            }
+
+            if (requestBody.getOldPassword() == null || requestBody.getNewPassword() == null){
+                return new ResponseEntity<>("Old password and new password are required", HttpStatus.BAD_REQUEST);
+            }
+
+            if (requestBody.getOldPassword().equals(requestBody.getNewPassword())){
+                return new ResponseEntity<>("New password cannot be the same as the old password", HttpStatus.BAD_REQUEST);
+            }
+
+            if (!userService.checkIfValidOldPassword(user, requestBody.getOldPassword())){
+                return new ResponseEntity<>("Old password is incorrect", HttpStatus.BAD_REQUEST);
+            }
+
+            userService.changePassword(user, requestBody.getNewPassword());
+            return new ResponseEntity<>("Password updated successfully", HttpStatus.OK);
+
+
+        }catch (Exception e ){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
     }
 }

@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "feedback_request")
+@Table(name = "feedback_requests")
 @Setter
 @Getter
 @NoArgsConstructor
@@ -25,12 +25,19 @@ public class FeedbackRequest {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private RequestStatus status;
+    private RequestStatus status = RequestStatus.PENDING;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     // Relationships
+    @ManyToOne
+    @JoinColumn(name = "requester_id", nullable = false)
+    private User requester;
+
+    @ManyToOne
+    @JoinColumn(name = "requestee_id", nullable = false)
+    private User requestee;
 
 
 }

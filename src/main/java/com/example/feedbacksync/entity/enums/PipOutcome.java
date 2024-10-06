@@ -1,5 +1,5 @@
 package com.example.feedbacksync.entity.enums;
 
 public enum PipOutcome {
-    IMPROVEMENT,PARTIAL_PROGRESS, FAILURE
+    PENDING,IMPROVEMENT,SUCCESS, FAILURE
 }
